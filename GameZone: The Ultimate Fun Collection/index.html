@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Collection</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff; /* Light background color */
+            color: #333; /* Dark text for contrast */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        h1, h2 {
+            color: #1a1a1a; /* Dark color for headings */
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #555; /* Lighter gray text for descriptions */
+            font-size: 1.2rem;
+            margin: 1rem 0;
+        }
+
+        .game-button {
+            margin: 15px;
+            padding: 15px 30px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            background-color: #4CAF50; /* Green background for buttons */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .game-button:hover {
+            background-color: #45a049; /* Darker green when hovered */
+        }
+
+        canvas {
+            background: #e0e0e0; /* Slightly darker canvas background */
+            display: block;
+            margin: auto;
+            border: 2px solid #333; /* Add a border for canvas */
+        }
+
+        .score {
+            font-size: 1.5rem;
+            margin: 20px;
+            color: #333;
+        }
+
+        #retryButton, #backButton {
+            display: none;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            h2, p, .game-button {
+                font-size: 1rem;
+            }
+            canvas {
+                width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-selection" class="slide active">
+        <h1>Welcome to the Game Collection</h1>
+        <h2>Select a Game to Play</h2>
+        <button class="game-button" onclick="showDescription('falling-blocks')">Avoid the Falling Blocks</button>
+        <button class="game-button" onclick="showDescription('bubble-shooter')">Bubble Shooter (Coming Soon)</button>
+        <button class="game-button" onclick="showDescription('sliding-puzzle')">Sliding Puzzle (Coming Soon)</button>
+    </div>
+    
+    <div id="game-description" class="slide">
+        <h1 id="game-title"></h1>
+        <p id="game-details"></p>
+        <button class="game-button" onclick="startGame()">Start Game</button>
+    </div>
+    
+    <div id="game-container" class="slide">
+        <h1 id="game-title-play"></h1>
+        <canvas id="gameCanvas" width="400" height="500"></canvas>
+        <div class="score">Score: <span id="score">0</span></div>
+        <button id="retryButton" class="game-button" onclick="retryGame()">Retry</button>
+        <button id="backButton" class="game-button" onclick="goBack()">Back</button>
+    </div>
+    
+    <script>
+        let selectedGame = "";
+        const descriptions = {
+            "falling-blocks": "Use the left and right arrow keys to move the blue player block. Avoid the falling red blocks. The longer you survive, the higher your score!",
+            "bubble-shooter": "Bubble Shooter is coming soon!",
+            "sliding-puzzle": "Sliding Puzzle is coming soon!"
+        };
+        
+        let score = 0;
+        let gameRunning = true;
+
+        function showSlide(slideId) {
+            document.querySelectorAll(".slide").forEach(slide => slide.classList.remove("active"));
+            document.getElementById(slideId).classList.add("active");
+        }
+        
+        function showDescription(game) {
+            selectedGame = game;
+            document.getElementById("game-title").textContent = game.replace("-", " ").toUpperCase();
+            document.getElementById("game-details").textContent = descriptions[game] || "Game not found";
+            if (game === "bubble-shooter" || game === "sliding-puzzle") {
+                showSlide("game-selection");
+            } else {
+                showSlide("game-description");
+            }
+        }
+        
+        function startGame() {
+            score = 0;
+            document.getElementById("score").textContent = score;
+            document.getElementById("retryButton").style.display = "none";
+            document.getElementById("backButton").style.display = "none";
+            document.getElementById("game-title-play").textContent = selectedGame.replace("-", " ").toUpperCase();
+            showSlide("game-container");
+            const canvas = document.getElementById("gameCanvas");
+            const ctx = canvas.getContext("2d");
+            if (selectedGame === "falling-blocks") {
+                startFallingBlocksGame(ctx, canvas);
+            }
+        }
+        
+        function endGame() {
+            gameRunning = false;
+            document.getElementById("retryButton").style.display = "inline-block";
+            document.getElementById("backButton").style.display = "inline-block";
+        }
+
+        function retryGame() {
+            gameRunning = true;
+            startGame();
+        }
+
+        function goBack() {
+            gameRunning = false;
+            showSlide("game-selection");
+        }
+
+        function startFallingBlocksGame(ctx, canvas) {
+            let player = { x: 180, y: 450, width: 40, height: 40, color: "blue" };
+            let blocks = [];
+            let score = 0;
+            let gameRunning = true;
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "ArrowLeft" && player.x > 0) player.x -= 20;
+                if (e.key === "ArrowRight" && player.x < canvas.width - player.width) player.x += 20;
+            });
+        
+            let blockInterval = setInterval(() => {
+                if (gameRunning) {
+                    blocks.push({ x: Math.random() * 360, y: 0, width: 40, height: 40, color: "red" });
+                }
+            }, 1000);
+
+            function gameLoop() {
+                if (!gameRunning) {
+                    clearInterval(blockInterval);
+                    return;
+                }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = player.color;
+                ctx.fillRect(player.x, player.y, player.width, player.height);
+
+                blocks.forEach((block, index) => {
+                    block.y += 5;
+                    ctx.fillStyle = block.color;
+                    ctx.fillRect(block.x, block.y, block.width, block.height);
+
+                    if (block.y > canvas.height) {
+                        blocks.splice(index, 1);
+                        score += 10;
+                        document.getElementById("score").textContent = score;
+                    }
+
+                    if (block.y + block.height >= player.y && block.x < player.x + player.width && block.x + block.width > player.x) {
+                        alert("Game Over!");
+                        gameRunning = false;
+                        document.getElementById("retryButton").style.display = "inline-block";
+                        document.getElementById("backButton").style.display = "inline-block";
+                    }
+                });
+            
+                requestAnimationFrame(gameLoop);
+            }
+
+            gameLoop();
+        }
+    </script>
+</body>
+</html>

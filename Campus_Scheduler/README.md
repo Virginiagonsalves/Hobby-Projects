@@ -7,7 +7,7 @@ This project involves the development of an Automatic College Bell System using 
 - User Input: Buttons allow users to set, check, and delete alarms.
 - EEPROM Storage: Saves alarm settings to EEPROM for persistence across power cycles.
 ### How to run
-1. Clone this repository using git clone https://github.com/your-username/campus-scheduler.git
+1. Clone this repository using git clone
 2. Open the program.ino file in the Arduino IDE
 3. Connect the hardware components according to the schematic diagram
 4. Upload the code to the Arduino board using the Arduino IDE

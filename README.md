@@ -33,6 +33,9 @@ A collection of simple and addictive browser-based games that will keep you ente
     - **Sliding Puzzle** (Coming Soon): Click on tiles to move them and solve the puzzle.
 3. **Game Over**: Once the game is over, you can retry or go back to the main menu.
 ## How to Run:
-1. **Clone or Download** the repository to your local machine.
-2. Open the `index.html` file in any modern web browser (Google Chrome, Firefox, Safari, etc.).
-3. Enjoy the games and have fun!
+1. Access it directly from https://huggingface.co/spaces/virginiagonsalves/Game-Zone
+
+   (OR)
+2. **Clone or Download** the repository to your local machine.
+3. Open the `index.html` file in any modern web browser (Google Chrome, Firefox, Safari, etc.).
+4. Enjoy the games and have fun!
